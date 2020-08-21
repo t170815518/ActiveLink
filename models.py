@@ -8,8 +8,8 @@ class ConvE(torch.nn.Module):
         super(ConvE, self).__init__()
         self.batch_size = config.batch_size
         self.embedding_dim = config.embedding_dim
-        self.emb_e = torch.nn.Embedding(num_entities, config.embedding_dim, padding_idx=0)
-        self.emb_rel = torch.nn.Embedding(num_relations, config.embedding_dim, padding_idx=0)
+        self.emb_e = torch.nn.Embedding(num_entities, config.embedding_dim)
+        self.emb_rel = torch.nn.Embedding(num_relations, config.embedding_dim)
         self.inp_drop = torch.nn.Dropout(config.input_dropout)
         self.hidden_drop = torch.nn.Dropout(config.dropout)
         self.feature_map_drop = torch.nn.Dropout2d(config.feature_map_dropout)
@@ -45,8 +45,11 @@ class ConvE(torch.nn.Module):
             batch_size = self.batch_size
 
         if weights is None:
-            e1_embedded = self.emb_e(e1).view(-1, 1, 10, 20)
-            rel_embedded = self.emb_rel(rel).view(-1, 1, 10, 20)
+            # print(rel.cpu().detach().numpy())
+
+            e1_embedded = self.emb_e(e1).reshape((-1, 1, 10, 20))
+            rel_embedded = self.emb_rel(rel).reshape((-1, 1, 10, 20))
+
             stacked_inputs = torch.cat([e1_embedded, rel_embedded], 2)  # out: (128L, 1L, 20L, 20L)
             x = self.bn0(stacked_inputs)
             x = self.inp_drop(x)
@@ -133,6 +136,7 @@ class MultilayerPerceptropn(torch.nn.Module):
         if weights is None:
             e1_embedded = self.emb_e(e1).view(-1, 1, 10, 20)
             rel_embedded = self.emb_rel(rel).view(-1, 1, 10, 20)
+
             stacked_inputs = torch.cat([e1_embedded, rel_embedded], 2)
             x = self.bn0(stacked_inputs)
             x = self.inp_drop(x)
@@ -166,3 +170,14 @@ class MultilayerPerceptropn(torch.nn.Module):
             pred = x + weights['b'].expand_as(x)
 
         return pred
+
+
+if __name__=="__main__":
+    model = torch.load("debug_model.model",map_location='cpu')
+    e1 = torch.load("e1.pt")
+    rel = torch.load("rel.pt")
+    e1 = torch.from_numpy(e1).long()
+    rel = torch.from_numpy(rel).long()
+    model.forward(e1, rel, 128)
+
+
