@@ -2,6 +2,7 @@
 
 import argparse
 import logging
+import os
 
 import torch.backends.cudnn as cudnn
 
@@ -45,7 +46,8 @@ def init_model(config, num_entities, num_relations):
     elif config.model_name == "MLP":
         model = MultilayerPerceptropn(config, num_entities, num_relations)
     else:
-        raise Exception("Model {} is not implemented yet".format(config.model_name))
+        model = ConvE(config, num_entities, num_relations)  # default model
+        # raise Exception("Model {} is not implemented yet".format(config.model_name))
 
     if config.cuda:
         model.cuda()
@@ -56,6 +58,9 @@ def init_model(config, num_entities, num_relations):
 
 
 def build_vocabs(config):
+    '''
+    Read files
+    '''
     entity2id = {}
     relation2id = {}
 
@@ -71,22 +76,23 @@ def build_vocabs(config):
 
     with open(config.relation2id_path) as relation2id_file:
         relations = relation2id_file.readlines()
-        rel_reverse_idx = len(relations)
+        # rel_reverse_idx = len(relations) + 1  # Because the id starts from 1
 
-        for line in relations:
+        for i, line in enumerate(relations):
             relation, rel_idx = line.strip().split("\t")
-            relation2id[relation] = int(rel_idx)  # id == 0 is a bad idea
-            relation2id[relation + "_reverse"] = rel_reverse_idx
-            rel_reverse_idx += 1
+            relation2id[relation] = int(rel_idx)
+            # relation2id[relation + "_reverse"] = rel_reverse_idx
+            # rel_reverse_idx += 1
 
     return entity2id, relation2id
 
 
 def main():
-    args = parse_args()
+    args = parse_args()  # parse command_line arguments
 
-    config = Config(args)
+    config = Config(args)  # set config file accordingly
 
+    # store mapping between entities/relation and id
     entity2id, rel2id = build_vocabs(config)
     log.info("Number of entities: {}".format(len(entity2id)))
     log.info("Number of relations: {}".format(len(rel2id)))
