@@ -20,7 +20,7 @@ class Config(object):
     # active learning params
     al_epochs = None  # active learning iterations
     early_stop_threshold = -1
-    eval_rate = 8  # run evaluation after each N epochs
+    eval_rate = 50  # run evaluation after each N epochs
     n_clusters = 1000
     sample_size = 1000  # number of training examples per one AL iteration
     sampling_mode = 'structured-uncertainty'

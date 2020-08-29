@@ -12,8 +12,7 @@ from random import sample
 log = logging.getLogger()
 
 
-def ranking_and_hits(model, dev_rank_batcher, batch_size, name, isSilent=False, testRate1=1,
-                     testSize2=0.3):
+def ranking_and_hits(model, dev_rank_batcher, batch_size, name, isSilent=False, testSizeForBatchTuple=2):
     '''
     Evaluate Mean rank and Hits@10 based on data in dev_rank_batcher whose size is batch_size
     :param model: torch module, trained model
@@ -21,6 +20,8 @@ def ranking_and_hits(model, dev_rank_batcher, batch_size, name, isSilent=False, 
     :param batch_size: int, the size of evaluation batch
     :param name: string, to format the display message
     :param isSilent: boolean, True means to verbose the evaluation result
+    :param testSizeForBatchTuple: int; each input (e1, rel) may have multiple positive entities, this parameter is the number
+    of positive entities to sample out for evaluation
     :return: float, mean rank
     '''
     printDisplayMessage(name)
@@ -47,11 +48,11 @@ def ranking_and_hits(model, dev_rank_batcher, batch_size, name, isSilent=False, 
             postiveEntities1 = e2_multi1[j][e2_multi1[j] != -1].long().tolist()
 
             # sample positive entities to save evaluation time
-            if len(postiveEntities1) > 3:
-                postiveEntities1 = sample(postiveEntities1, 3)
+            if len(postiveEntities1) > testSizeForBatchTuple:
+                postiveEntities1 = sample(postiveEntities1, testSizeForBatchTuple)
             postiveEntities2 = e2_multi2[j][e2_multi2[j] != -1].long().tolist()
-            if len(postiveEntities2) > 3:
-                postiveEntities2 = sample(postiveEntities2, 3)
+            if len(postiveEntities2) > testSizeForBatchTuple:
+                postiveEntities2 = sample(postiveEntities2, testSizeForBatchTuple)
 
             # find the rank of the target entities
             hit1 = 0
