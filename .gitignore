@@ -1,0 +1,7 @@
+
+data/FB15k-237/e1rel_to_e2_ranking_test.json
+data/FB15k-237/e1rel_to_e2_ranking_dev.json
+data/FB15k-237/e1rel_to_e2_full.json
+data/wikidata_1000k/e1rel_to_e2_full.json
+data/wikidata_1000k/e1rel_to_e2_ranking_dev.json
+data/wikidata_1000k/e1rel_to_e2_ranking_test.json
