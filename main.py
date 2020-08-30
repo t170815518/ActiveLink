@@ -2,9 +2,10 @@
 
 import argparse
 import logging
-import os
+import sys
 
 import torch.backends.cudnn as cudnn
+from torch import save
 
 from config import Config
 from data_streamers import DataStreamer, DataSampleStreamer, DataTaskStreamer
@@ -12,11 +13,13 @@ from incr_training import run_incremental
 from logger import setup_logger
 from meta_incr_training import run_meta_incremental
 from models import ConvE, MultilayerPerceptropn
+from datetime import datetime
 
 cudnn.benchmark = True
 
 setup_logger()
 log = logging.getLogger()
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -59,7 +62,7 @@ def init_model(config, num_entities, num_relations):
 
 def build_vocabs(config):
     '''
-    Read files
+    Read entity2id and rel2id files from config
     '''
     entity2id = {}
     relation2id = {}
@@ -146,6 +149,9 @@ def main():
         log.info("Update training set: finished")
 
         log.info("{} iteration of active learning: finished".format(epoch + 1))
+
+    # save the trained model
+    save(model.state_dict(), "trained_model/{}.state_dict".format(args.dataset))
 
 
 if __name__ == "__main__":
