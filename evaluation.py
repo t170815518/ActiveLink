@@ -22,7 +22,7 @@ def ranking_and_hits(model, dev_rank_batcher, batch_size, name, isSilent=False, 
     :param isSilent: boolean, True means to verbose the evaluation result
     :param testSizeForBatchTuple: int; each input (e1, rel) may have multiple positive entities, this parameter is the number
     of positive entities to sample out for evaluation
-    :return: float, mean rank
+    :return: tuple of float, mean rank and hits@10
     '''
     printDisplayMessage(name)
 
@@ -73,14 +73,15 @@ def ranking_and_hits(model, dev_rank_batcher, batch_size, name, isSilent=False, 
 
             hits.extend([hit1, hit2])
 
+    meanRank = np.mean(ranks)
+    hits10 = np.mean(hits)
+
     if not isSilent:
-        meanRank = np.mean(ranks)
-        hits10 = np.mean(hits)
         log.info('Hits @10: %f', hits10)
         log.info('Mean rank: %f', meanRank)
         # log.info('Mean reciprocal rank: %f', np.mean(1. / np.array(ranks)))
 
-    return meanRank
+    return meanRank, hits10
 
 
 def predictProbability(e1, e2, model, rel, rel_reverse):
