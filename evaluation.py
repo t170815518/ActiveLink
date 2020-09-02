@@ -58,7 +58,7 @@ def ranking_and_hits(model, dev_rank_batcher, batch_size, name, isSilent=False, 
             hit1 = 0
             for pos_e1 in postiveEntities1:
                 rank1 = (argsort1[j] == pos_e1).nonzero().item()
-                if rank1 < 9:
+                if rank1 <= 9:
                     hit1 += 1
                 ranks.append(rank1+1)  # rank+1, since the lowest rank is rank 1 not rank 0
             hit1 /= 10
@@ -66,7 +66,7 @@ def ranking_and_hits(model, dev_rank_batcher, batch_size, name, isSilent=False, 
             hit2 = 0
             for pos_e2 in postiveEntities2:
                 rank2 = (argsort2[j] == pos_e2).nonzero().item()
-                if hit2 < 9:
+                if hit2 <= 9:
                     hit2 += 1
                 ranks.append(rank2+1)  # rank+1, since the lowest rank is rank 1 not rank 0
             hit2 /= 10
