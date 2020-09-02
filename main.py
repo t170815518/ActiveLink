@@ -2,7 +2,7 @@
 
 import argparse
 import logging
-import sys
+import os
 
 import torch.backends.cudnn as cudnn
 from torch import save
@@ -14,11 +14,13 @@ from logger import setup_logger
 from meta_incr_training import run_meta_incremental
 from models import ConvE, MultilayerPerceptropn
 from datetime import datetime
+from evaluation import ranking_and_hits
 
 cudnn.benchmark = True
 
 setup_logger()
 log = logging.getLogger()
+
 
 
 def parse_args():
@@ -95,11 +97,20 @@ def main():
 
     config = Config(args)  # set config file accordingly
 
+    # model = model_training(config)
+
+    # # save the trained model
+    # save(model.state_dict(), "trained_model/{}.state_dict".format(args.dataset))
+
+
+def model_training(config):
+    '''
+    :param config: Config object of model's parameters
+    '''
     # store mapping between entities/relation and id
     entity2id, rel2id = build_vocabs(config)
     log.info("Number of entities: {}".format(len(entity2id)))
     log.info("Number of relations: {}".format(len(rel2id)))
-
     log.info("Initializing training sample streamer")
     if config.training_mode == "meta-incremental":
         train_batcher = DataTaskStreamer(
@@ -123,14 +134,12 @@ def main():
             config.sampling_mode,
         )
     train_batcher.init(config.train_path)
-
     log.info("Initializing test_rank streamer")
     test_rank_batcher = DataStreamer(entity2id, rel2id, config.batch_size)
     test_rank_batcher.init_from_path(config.ranking_test_path)
-
     model = init_model(config, len(entity2id), len(rel2id))
-
-    for epoch in range(config.al_epochs):
+    # for epoch in range(config.al_epochs):
+    for epoch in range(10):
         log.info("{} iteration of active learning: started".format(epoch + 1))
 
         log.info("Train model: started")
@@ -150,8 +159,9 @@ def main():
 
         log.info("{} iteration of active learning: finished".format(epoch + 1))
 
-    # save the trained model
-    save(model.state_dict(), "trained_model/{}.state_dict".format(args.dataset))
+        mean_rank, hits10 = ranking_and_hits(model, test_rank_batcher, config.batch_size, 'test_evaluation')
+
+    return model, (mean_rank, hits10)
 
 
 if __name__ == "__main__":
