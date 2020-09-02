@@ -9,13 +9,11 @@ from config import Config
 from main import model_training
 
 
-thread_num = 15
-test_size = 100  # the number of parameters set test in each thread
+thread_num = 1
+test_size = 1  # the number of parameters set test in each thread
 
 # parameters
 parameter_candidates_dict = {
-    "embedding_dim": [150, 250, 200, 300, 400],
-    "batch_size": [80, 150, 128, 200, 250],
     "inner_learning_rate": [0.1, 0.01, 0.05, 0.2, 0.15, 0.09],
     "learning_rate": [0.003, 0.005, 0.001, 0.002],
     "dropout": [0.1, 0.3, 0.5, 0.2, 0.4, 0.25, 0.35]
@@ -23,6 +21,9 @@ parameter_candidates_dict = {
 
 total_results = [None] * thread_num
 
+# create txt files for records
+for i in range(thread_num):
+    open("thread_{}.txt".format(i), "w+")
 
 def train_with_params(thread_id):
     results_in_threads = []
@@ -40,7 +41,7 @@ def train_with_params(thread_id):
 
         mean_rank, hits10 = returned_values[1]
         single_set_param.update({"mean_rank": mean_rank, "hits@10": hits10})
-        with open("parameter_tuning_result/thread_{}.txt".format(thread_id), "a+") as f:
+        with open("thread_{}.txt".format(thread_id), "a+") as f:
             f.write(single_set_param)
             f.write("\n")
 
@@ -63,7 +64,7 @@ if __name__ == "__main__":
 
     total_results.sort(key=lambda x: x["mean_rank"], reverse=True)  # sort the list based on mean_rank
 
-    with open("parameter_tuning_result/total_result.txt", "w+") as f:
+    with open("total_result.txt", "w+") as f:
         for result in total_results:
             f.write(result)
             f.write("\n")
