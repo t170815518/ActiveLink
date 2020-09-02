@@ -9,6 +9,7 @@ def setup_logger():
     logger.setLevel(logging.INFO)
     log_formatter = logging.Formatter("%(asctime)s %(levelname)s  %(message)s")
 
+    working_dir = os.path.dirname(__file__)
     log_dir = "logs"
     if not os.path.exists(log_dir):
         os.mkdir(log_dir)

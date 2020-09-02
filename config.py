@@ -41,7 +41,11 @@ class Config(object):
     optimizer = 'adam'
 
     def __init__(self, args):
-        for name, value in vars(args).items():
+        if type(args) is dict:  # Add handler for args in dict
+            item_iter = args.items()
+        else:
+            item_iter = vars(args).items()
+        for name, value in item_iter:
             if value is not None:
                 setattr(self, name, value)
                 log.info('Set parameter %s to %s', name, value)
@@ -56,9 +60,10 @@ class Config(object):
             log.info('Set parameter al_epochs to %d', self.al_epochs)
 
         # paths
-        self.train_path = os.path.join("data", self.dataset, "e1rel_to_e2_train.json")
-        self.ranking_dev_path = os.path.join("data", self.dataset, "e1rel_to_e2_ranking_dev.json")
-        self.ranking_test_path = os.path.join("data", self.dataset, "e1rel_to_e2_ranking_test.json")
-        self.entity_embed_path = os.path.join("data", self.dataset, "entity2vec")
-        self.entity2id_path = os.path.join("data", self.dataset, "entity2id.txt")
-        self.relation2id_path = os.path.join("data", self.dataset, "relation2id.txt")
+        working_dir = os.path.dirname(__file__)
+        self.train_path = os.path.join(working_dir, "data", self.dataset, "e1rel_to_e2_train.json")
+        self.ranking_dev_path = os.path.join(working_dir, "data", self.dataset, "e1rel_to_e2_ranking_dev.json")
+        self.ranking_test_path = os.path.join(working_dir, "data", self.dataset, "e1rel_to_e2_ranking_test.json")
+        self.entity_embed_path = os.path.join(working_dir, "data", self.dataset, "entity2vec")
+        self.entity2id_path = os.path.join(working_dir, "data", self.dataset, "entity2id.txt")
+        self.relation2id_path = os.path.join(working_dir, "data", self.dataset, "relation2id.txt")
