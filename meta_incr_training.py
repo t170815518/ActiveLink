@@ -149,12 +149,12 @@ def run_meta_incremental(config, model, train_batcher, test_rank_batcher):
     '''
     opt = torch.optim.Adam(model.parameters(), lr=config.learning_rate)
 
-    mr_opt = float('inf')
-    model_opt = model
+    # mr_opt = float('inf')
+    # model_opt = model
     early_stop_flag = False
-    i = 1
+    # i = 1
 
-    while True:
+    for i in range(150):  # restrict the incremental training epoches to save testing time
         log.info("{} epoch: started".format(i))
         epoch_start_time = datetime.datetime.now()
         model.train()
@@ -172,27 +172,28 @@ def run_meta_incremental(config, model, train_batcher, test_rank_batcher):
         # Perform the meta update
         perform_meta_update(config, test_rank_batcher, model, grads, opt)
 
-        if i % config.eval_rate == 0:
-            model.eval()
-            log.info("Evaluation: started")
-            eval_start_time = datetime.datetime.now()
-            mr = ranking_and_hits(model, test_rank_batcher, config.batch_size, 'test_evaluation')
-            log.info("Evaluation: finished")
-            log.info("Evaluation took {}".format(datetime.datetime.now() - eval_start_time))
-
-            early_stop_flag = early_stopping(mr, mr_opt, config.early_stop_threshold)
-
-            if mr < mr_opt:
-                model_opt = model
-                mr_opt = mr
+        # if i % config.eval_rate == 0:
+        #     model.eval()
+        #     log.info("Evaluation: started")
+        #     eval_start_time = datetime.datetime.now()
+        #     mr = ranking_and_hits(model, test_rank_batcher, config.batch_size, 'test_evaluation')
+        #     log.info("Evaluation: finished")
+        #     log.info("Evaluation took {}".format(datetime.datetime.now() - eval_start_time))
+        #
+        #     early_stop_flag = early_stopping(mr, mr_opt, config.early_stop_threshold)
+        #
+        #     if mr < mr_opt:
+        #         model_opt = model
+        #         mr_opt = mr
 
         log.info("{} epoch: finished".format(i))
         log.info("Epoch {} took {}".format(i, datetime.datetime.now() - epoch_start_time))
 
-        if early_stop_flag:
-            log.info("Early stopping after {} epochs".format(i))
-            break
+        # if early_stop_flag:
+        #     log.info("Early stopping after {} epochs".format(i))
+        #     break
 
         i += 1
 
-    return model_opt
+    return model
+    # return model_opt
