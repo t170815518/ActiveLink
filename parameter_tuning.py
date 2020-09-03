@@ -15,6 +15,8 @@ test_size = 1  # the number of parameters set test in each thread
 
 # parameters
 parameter_candidates_dict = {
+    "batch_size": [128, 256, 300, 500, 400, 200],
+    "embedding_dim": [200, 256, 128, 150, 300],
     "inner_learning_rate": [0.1, 0.01, 0.05, 0.2, 0.09, 0.03, 0.001, 0.005],
     "learning_rate": [0.003, 0.005, 0.001, 0.002],
     "dropout": [0.1, 0.3, 0.5, 0.2, 0.4, 0.25, 0.35]
@@ -35,7 +37,7 @@ def train_with_params(thread_id):
         # randomly choose parameters
         for key, values in parameter_candidates_dict.items():
             sampled_value = sample(values, 1)[0]  # [0] for getting the single value from list
-            single_set_param.update({key: sampled_value})
+            single_set_param.update({key: sampled_value, "model_name": "MLP"})  # specify the mode name
 
         config = Config(single_set_param)
         returned_values = model_training(config)  # model_training returns "model, (mean_rank, hits10)"
