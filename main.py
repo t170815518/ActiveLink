@@ -30,7 +30,7 @@ def parse_args():
     parser.add_argument("--embedding-dim", dest="embedding_dim", type=int)
     parser.add_argument("--early-stop-threshold", dest="early_stop_threshold", type=int)
     parser.add_argument("--eval-rate", dest="eval_rate", type=int, help="make evaluation each n epochs")
-    parser.add_argument("--inner-lr", dest="inner_learning_rate", type=int)
+    parser.add_argument("--inner-lr", dest="inner_learning_rate", type=float)
     parser.add_argument("--lr", dest="learning_rate", type=float)
     parser.add_argument("--lr-decay", dest="learning_rate_decay", type=float)
     parser.add_argument("--model", dest="model_name", choices=["ConvE", "MLP"])
