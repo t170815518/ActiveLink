@@ -1,0 +1,5 @@
+{"inner_learning_rate": 0.03, "learning_rate": 0.001, "dropout": 0.5, "mean_rank": 1006.8958333333334, "hits@10": 0.11848958333333333}
+{"inner_learning_rate": 0.01, "learning_rate": 0.001, "dropout": 0.35, "mean_rank": 1252.496956928839, "hits@10": 0.12157118055555556}
+{"inner_learning_rate": 0.03, "learning_rate": 0.003, "dropout": 0.2, "mean_rank": 1984.693820224719, "hits@10": 0.12139756944444444}
+{"inner_learning_rate": 0.001, "learning_rate": 0.005, "dropout": 0.25, "mean_rank": 1770.811095505618, "hits@10": 0.11974826388888887}
+{"inner_learning_rate": 0.001, "learning_rate": 0.002, "dropout": 0.3, "mean_rank": 1554.7911985018727, "hits@10": 0.12013888888888889}

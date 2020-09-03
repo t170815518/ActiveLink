@@ -1,0 +1,4 @@
+{"inner_learning_rate": 0.005, "learning_rate": 0.003, "dropout": 0.25, "mean_rank": 1691.8441011235955, "hits@10": 0.12196180555555555}
+{"inner_learning_rate": 0.03, "learning_rate": 0.003, "dropout": 0.3, "mean_rank": 1598.244616104869, "hits@10": 0.12048611111111113}
+{"inner_learning_rate": 0.1, "learning_rate": 0.002, "dropout": 0.3, "mean_rank": 1388.3270131086142, "hits@10": 0.12000868055555555}
+{"inner_learning_rate": 0.03, "learning_rate": 0.005, "dropout": 0.1, "mean_rank": 1871.062968164794, "hits@10": 0.12100694444444444}
