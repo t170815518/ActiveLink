@@ -12,7 +12,7 @@ from random import sample
 log = logging.getLogger()
 
 
-def ranking_and_hits(model, dev_rank_batcher, batch_size, name, isSilent=False, testSizeForBatchTuple=2):
+def ranking_and_hits(model, dev_rank_batcher, batch_size, name, isSilent=False, testSizeForBatchTuple=2, mode="filter"):
     '''
     Evaluate Mean rank and Hits@10 based on data in dev_rank_batcher whose size is batch_size
     :param model: torch module, trained model
@@ -22,6 +22,7 @@ def ranking_and_hits(model, dev_rank_batcher, batch_size, name, isSilent=False, 
     :param isSilent: boolean, True means to verbose the evaluation result
     :param testSizeForBatchTuple: int; each input (e1, rel) may have multiple positive entities, this parameter is the number
     of positive entities to sample out for evaluation
+    :param mode: String, either "filter" or "raw" to represent different evaluation modes
     :return: tuple of float, mean rank and hits@10
     '''
     printDisplayMessage(name)
@@ -46,13 +47,27 @@ def ranking_and_hits(model, dev_rank_batcher, batch_size, name, isSilent=False, 
         for j in range(batch_size):  # iterate over batch with the size of 128
             # find the positive entities
             postiveEntities1 = e2_multi1[j][e2_multi1[j] != -1].long().tolist()
-
-            # sample positive entities to save evaluation time
-            if len(postiveEntities1) > testSizeForBatchTuple:
-                postiveEntities1 = sample(postiveEntities1, testSizeForBatchTuple)
             postiveEntities2 = e2_multi2[j][e2_multi2[j] != -1].long().tolist()
-            if len(postiveEntities2) > testSizeForBatchTuple:
-                postiveEntities2 = sample(postiveEntities2, testSizeForBatchTuple)
+
+            if mode == "raw":
+                # sample positive entities to save evaluation time
+                if len(postiveEntities1) > testSizeForBatchTuple:
+                    testPostiveEntities1 = sample(postiveEntities1, testSizeForBatchTuple)
+                if len(postiveEntities2) > testSizeForBatchTuple:
+                    testPostiveEntities2 = sample(postiveEntities2, testSizeForBatchTuple)
+            elif mode == "filter":
+                # save the prediction that is relevant
+                target_value1 = pred1[j, e2[j, 0]]
+                target_value2 = pred2[j, e1[j, 0]]
+                # make all training tuples to zero: this corresponds to the filtered setting
+                pred1[j][postiveEntities1] = 0.0
+                pred2[j][postiveEntities2] = 0.0
+                # only keep the relevant target values
+                pred1[j][e2[j]] = target_value1
+                pred2[j][e1[j]] = target_value2
+                # remove other values from the test list
+                postiveEntities1 = [e2[j, 0]]
+                postiveEntities2 = [e1[j, 0]]
 
             # find the rank of the target entities
             hit1 = 0
@@ -65,7 +80,7 @@ def ranking_and_hits(model, dev_rank_batcher, batch_size, name, isSilent=False, 
 
             hit2 = 0
             for pos_e2 in postiveEntities2:
-                rank2 = (argsort2[j] == pos_e2).nonzero().item()
+                rank2 = (argsort2[j] == pos_e2).nonzero().item()  # assume only 1 place can be non-zero
                 if hit2 <= 9:
                     hit2 += 1
                 ranks.append(rank2+1)  # rank+1, since the lowest rank is rank 1 not rank 0
