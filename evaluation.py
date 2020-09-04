@@ -70,27 +70,30 @@ def ranking_and_hits(model, dev_rank_batcher, batch_size, name, isSilent=False, 
                 postiveEntities2 = [e1[j, 0]]
 
             # find the rank of the target entities
-            hit1 = 0
+            hit1 = []
             for pos_e1 in postiveEntities1:
                 rank1 = (argsort1[j] == pos_e1).nonzero().item()
                 if rank1 <= 9:
-                    hit1 += 1
+                    hit1.append(1)
+                else:
+                    hit1.append(0)
                 ranks.append(rank1+1)  # rank+1, since the lowest rank is rank 1 not rank 0
-            hit1 /= 10
 
-            hit2 = 0
+            hit2 = []
             for pos_e2 in postiveEntities2:
                 rank2 = (argsort2[j] == pos_e2).nonzero().item()  # assume only 1 place can be non-zero
                 if hit2 <= 9:
-                    hit2 += 1
+                    hit2.append(1)
+                else:
+                    hit2.append(0)
                 ranks.append(rank2+1)  # rank+1, since the lowest rank is rank 1 not rank 0
-            hit2 /= 10
 
             hits.extend([hit1, hit2])
 
+    meanRank = np.mean(ranks)
+    hits10 = np.mean(hits)
+    
     if not isSilent:
-        meanRank = np.mean(ranks)
-        hits10 = np.mean(hits)
         log.info('Hits @10: %f', hits10)
         log.info('Mean rank: %f', meanRank)
         # log.info('Mean reciprocal rank: %f', np.mean(1. / np.array(ranks)))
