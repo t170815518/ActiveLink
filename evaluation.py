@@ -19,9 +19,9 @@ def ranking_and_hits(model, dev_rank_batcher, batch_size, name, isSilent=False, 
     :param dev_rank_batcher: DataStreamer object, including tuples to evaluate
     :param batch_size: int, the size of evaluation batch
     :param name: string, to format the display message
-    :param isSilent: boolean, True means to verbose the evaluation result
+    :param isSilent: boolean, False means to verbose the evaluation result
     :param testSizeForBatchTuple: int; each input (e1, rel) may have multiple positive entities, this parameter is the number
-    of positive entities to sample out for evaluation
+    of positive entities to sample out for evaluation. It's useful for 'raw' evaluation mode.
     :param mode: String, either "filter" or "raw" to represent different evaluation modes
     :return: float, mean rank
     '''
@@ -57,8 +57,8 @@ def ranking_and_hits(model, dev_rank_batcher, batch_size, name, isSilent=False, 
                     testPostiveEntities2 = sample(postiveEntities2, testSizeForBatchTuple)
             elif mode == "filter":
                 # save the prediction that is relevant
-                target_value1 = pred1[j, e2[j, 0]]
-                target_value2 = pred2[j, e1[j, 0]]
+                target_value1 = pred1[j, e2[j, 0]].item()
+                target_value2 = pred2[j, e1[j, 0]].item()
                 # make all training tuples to zero: this corresponds to the filtered setting
                 pred1[j][postiveEntities1] = 0.0
                 pred2[j][postiveEntities2] = 0.0
