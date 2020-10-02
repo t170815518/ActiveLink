@@ -18,6 +18,7 @@ class TuplesSampler:
         self.train = []
         self.test = []
         self.validation = []
+        self.relation_num = 0
 
     def extract_tuples(self):
         print("=========Start Processing=========")
@@ -34,23 +35,26 @@ class TuplesSampler:
                 print("Processing {}%".format(progress))
                 progress += 0.1
 
+        self.relation_num = len(self.relations)
         print("=========Finish Processing=========")
 
     def analyze_dataset(self, is_write_to_file=True):
         def write_analysis_to_file():
             with open(self.working_path+"dataset_information.txt", 'w+') as f:
-                f.write("Entities number = {}\n".format(len(entities_with_degree)))
-                f.write("Relations number = {}\n".format(len(relations)))
-                f.write("Average in-degree = {}\n".format(in_degree_sum / len(entities_with_degree)))
+                f.write("Entities number = {}\n".format(total_size))
+                f.write("Relations number = {}\n".format(relation_num))
+                f.write("Average in-degree = {}\n".format(in_degree_sum / total_size))
                 f.write("Min in-degree = {}\n".format(in_degree_min))
                 f.write("Max in-degree = {}\n".format(in_degree_max))
-                f.write("Average out-degree = {}\n".format(out_degree_sum / len(entities_with_degree)))
+                f.write("Average out-degree = {}\n".format(out_degree_sum / total_size))
                 f.write("Min out-degree = {}\n".format(out_degree_min))
                 f.write("Max out-degree = {}\n".format(out_degree_max))
-                f.write("Average degree = {}\n".format(degree_sum / len(entities_with_degree)))
+                f.write("Average degree = {}\n".format(degree_sum / total_size))
                 f.write("Min degree = {}\n".format(degree_min))
                 f.write("Max degree = {}\n".format(degree_max))
 
+        total_size = self.entities_with_degree
+        relation_num = self.relation_num
         # initialize
         in_degree_min = float('inf')
         in_degree_max = float('-inf')
