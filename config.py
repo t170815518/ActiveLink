@@ -8,14 +8,16 @@ log = logging.getLogger()
 dataset_sizes = {
     "FB15k-237": 149689,
     "wikidata_300k": 201505,
-    "wikidata_1000k": 634250
+    "wikidata_1000k": 634250,
+    "alicoco": 220879,
 }
+
 
 class Config(object):
     # general params
     backend = 'pytorch'
     cuda = True
-    dataset = 'FB15k-237'
+    dataset = 'alicoco'
 
     # active learning params
     al_epochs = None  # active learning iterations

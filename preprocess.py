@@ -39,7 +39,7 @@ for p in files:
             e1 = e1.strip()
             e2 = e2.strip()
             rel = rel.strip()
-            rel_reverse = rel+ '_reverse'
+            rel_reverse = rel + '_reverse'
 
             if (e1 , rel) not in label_graph:
                 label_graph[(e1, rel)] = set()
